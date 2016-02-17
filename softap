@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+export SNAP_APP_PATH="/apps/softap-demo.davidchen/current"
+export SNAP_APP_DATA_PATH="/var/lib/apps/softap-demo.davidchen/current"
+export LD_LIBRARY_PATH="$SNAP_APP_PATH/lib:$SNAP_APP_PATH/usr/lib:$SNAP_APP_PATH/lib/arm-linux-gnueabihf:$SNAP_APP_PATH/usr/lib/arm-linux-gnueabihf:$LD_LIBRARY_PATH"
+
+#Initial wifi interface configuration
+/sbin/ifconfig wlan0 up 10.0.0.1 netmask 255.255.255.0
+/bin/sleep 2
+
+#Enable NAT
+/sbin/iptables --flush
+/sbin/iptables --table nat --flush
+/sbin/iptables --delete-chain
+/sbin/iptables --table nat --delete-chain
+/sbin/iptables --table nat --append POSTROUTING --out-interface eth0 -j MASQUERADE
+/sbin/iptables --append FORWARD --in-interface wlan0 -j ACCEPT
+
+/sbin/sysctl -w net.ipv4.ip_forward=1
+
+#start hostapd
+$SNAP_APP_PATH/usr/sbin/hostapd $SNAP_APP_PATH/usr/bin/hostapd.conf -B
+
+#start dnsmasq
+$SNAP_APP_PATH/usr/sbin/dnsmasq -C $SNAP_APP_PATH/usr/bin/dnsmasq.conf -l $SNAP_APP_DATA_PATH/dnsmasq.leases -x $SNAP_APP_DATA_PATH/dnsmasq.pid -d
+
+

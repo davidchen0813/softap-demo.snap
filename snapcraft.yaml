@@ -1,0 +1,31 @@
+name: softap-demo
+version: 1.2.4
+vendor: David Chen <david.chen@canonical.com>
+summary: Soft AP for Snappy ARM (demo only)
+description: Soft AP for Snappy Ubuntu Core ARM. Default SSID/PASSWORD - SoftAP-Canonical/warthogs
+icon: icon.png
+
+services:
+    softap:
+        description: "service to start router"
+        start: usr/bin/softap
+        caps:
+            - network-client
+            - network-firewall
+            - network-admin
+parts:
+    hostapd:
+        plugin: nil
+        stage-packages:
+            - hostapd
+    dnsmasq:
+        plugin: nil
+        stage-packages:
+            - dnsmasq
+    move:
+        plugin: copy
+        files: 
+          hostapd.conf: usr/bin/hostapd.conf
+          softap: usr/bin/softap
+          dnsmasq.conf: usr/bin/dnsmasq.conf
+
