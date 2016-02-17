@@ -1,6 +1,6 @@
 # softap-demo.snap
 [Description]
-SoftAP APP for Snappy Ubuntu Core devices
+SoftAP APP for Snappy Ubuntu Core devices.  
 The APP combines 3 parts:
  1. hostapd
  2. dnsmasq
